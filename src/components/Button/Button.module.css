@@ -1,0 +1,15 @@
+.myButton {
+  background-color: #5dd461;
+  border-width: 1px ;
+  border-radius: 50% 20% / 10% 40%;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  display: inline-block;
+  font-size: 1.2rem;
+  cursor: pointer;  /* dodaje ikonkę rączki po najechaniu */
+}
+
+.myButton:hover {
+    box-shadow: 5px 5px 15px 5px #D1D1D1;;
+  }
