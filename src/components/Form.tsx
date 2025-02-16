@@ -11,8 +11,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export function Form() {
-    const { register, handleSubmit, formState: { errors }, formState } = useForm<FormData>({ resolver: zodResolver(schema) })
-    console.log(formState.errors)
+    const { register, handleSubmit, formState: { errors, isValid } } = useForm<FormData>({ resolver: zodResolver(schema) })
 
     const onSubmit = (data: FieldValues) => {
         console.log(data)
@@ -30,7 +29,7 @@ export function Form() {
                 <input {...register('age', {valueAsNumber: true})} id="age" type="number" className="form-control" />
             </div>
             {errors.age && <p className='text-danger'>{errors.age.message}</p>}
-            <button className="btn btn-primary" type="submit">Submit</button>
+            <button disabled={!isValid} className="btn btn-primary" type="submit">Submit</button>
         </form>
     )
 }
