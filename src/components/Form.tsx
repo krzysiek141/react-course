@@ -1,13 +1,17 @@
 import { FormEvent, useRef } from "react"
 import { FieldValues, useForm } from "react-hook-form"
+import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod'
 
-interface FormData {
-    name: string;
-    age: number;
-}
+const schema = z.object({
+    name: z.string().min(3, { message: 'my custom error message'}),
+    age: z.number({ invalid_type_error: 'Age field is required'}).min(18)
+})
+
+type FormData = z.infer<typeof schema>
 
 export function Form() {
-    const { register, handleSubmit, formState: {errors}, formState} = useForm<FormData>()
+    const { register, handleSubmit, formState: { errors }, formState } = useForm<FormData>({ resolver: zodResolver(schema) })
     console.log(formState.errors)
 
     const onSubmit = (data: FieldValues) => {
@@ -18,14 +22,14 @@ export function Form() {
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-3">
                 <label htmlFor="name" className="form-label">Name</label>
-                <input {...register('name', {required: true, minLength: 4})} id="name" type="text" className="form-control" />
+                <input {...register('name')} id="name" type="text" className="form-control" />
             </div>
-            {errors.name?.type === 'required' && <p className='text-danger'>The name field is required</p>}
-            {errors.name?.type === 'minLength' && <p className='text-danger'>The name must be at least 4 characters</p>}
+            {errors.name && <p className='text-danger'>{errors.name.message}</p>}
             <div className="mb-3">
                 <label htmlFor="age" className="form-label">Age</label>
-                <input {...register('age')} id="age" type="number" className="form-control" />
+                <input {...register('age', {valueAsNumber: true})} id="age" type="number" className="form-control" />
             </div>
+            {errors.age && <p className='text-danger'>{errors.age.message}</p>}
             <button className="btn btn-primary" type="submit">Submit</button>
         </form>
     )
