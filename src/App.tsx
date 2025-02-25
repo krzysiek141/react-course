@@ -3,50 +3,73 @@ import { ExpenseTrackerForm } from "./expense-tracker/components/ExpenseTrackerF
 import { ExpenseList, Expense } from "./expense-tracker/components/ExpenseList";
 import { ExpenseFilter } from "./expense-tracker/components/ExpenseFilter";
 import { FieldValues } from "react-hook-form"
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 
+// function App() {
+//   const expensesDefault: Expense[] = [
+//     { id: 1, description: "aaaa", amount: 3, category: "Groceries" },
+//     { id: 2, description: "aaaa", amount: 34, category: "Utilities" },
+//     { id: 3, description: "aaaa", amount: 14, category: "Utilities" },
+//     { id: 4, description: "aaaa", amount: 8, category: "Entertainment" },
+//   ];
+
+//   const [expenses, setExpenses] = useState(expensesDefault);
+//   const [selectedCategory, setSelectedCategory] = useState("");
+
+//   const onExpenseDelete = (id: number) => {
+//     setExpenses(expenses.filter((expense) => expense.id !== id));
+//   };
+
+//   const onFilterExpenses = (category: string) => {
+//     setSelectedCategory(category);
+//   };
+
+//   const formSubmitHandler = (data: FieldValues) => {
+//     setExpenses([...expenses, {...data, id: expenses.length + 1} as Expense])
+//   }
+
+//   const filteredExpenses =
+//     selectedCategory !== ""
+//       ? expenses.filter((expense) => expense.category === selectedCategory)
+//       : expenses;
+
+//   const availableCategories = [
+//     ...new Set(expensesDefault.map((expense) => expense.category)),
+//   ];
+
+//   return (
+//     <>
+//       <div>
+//         <ExpenseTrackerForm availableCategories={availableCategories} onSubmit={formSubmitHandler} />
+//         <ExpenseFilter availableCategories={availableCategories} onSelect={onFilterExpenses} />
+//         <ExpenseList expenses={filteredExpenses} onDelete={onExpenseDelete} />
+//       </div>
+//     </>
+//   );
+// }
+
+
 function App() {
-  const expensesDefault: Expense[] = [
-    { id: 1, description: "aaaa", amount: 3, category: "Groceries" },
-    { id: 2, description: "aaaa", amount: 34, category: "Utilities" },
-    { id: 3, description: "aaaa", amount: 14, category: "Utilities" },
-    { id: 4, description: "aaaa", amount: 8, category: "Entertainment" },
-  ];
+  const domRefObject = useRef<HTMLInputElement>(null)
 
-  const [expenses, setExpenses] = useState(expensesDefault);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  useEffect(() => {
+    // if dom object exists
+    if (domRefObject.current) {
+      // side effect - focusing on an input field
+      domRefObject.current.focus()
+    }
+  })
 
-  const onExpenseDelete = (id: number) => {
-    setExpenses(expenses.filter((expense) => expense.id !== id));
-  };
-
-  const onFilterExpenses = (category: string) => {
-    setSelectedCategory(category);
-  };
-
-  const formSubmitHandler = (data: FieldValues) => {
-    setExpenses([...expenses, {...data, id: expenses.length + 1} as Expense])
-  }
-
-  const filteredExpenses =
-    selectedCategory !== ""
-      ? expenses.filter((expense) => expense.category === selectedCategory)
-      : expenses;
-
-  const availableCategories = [
-    ...new Set(expensesDefault.map((expense) => expense.category)),
-  ];
+  useEffect(() => {
+    document.title = 'Moja apka'
+  })
 
   return (
-    <>
-      <div>
-        <ExpenseTrackerForm availableCategories={availableCategories} onSubmit={formSubmitHandler} />
-        <ExpenseFilter availableCategories={availableCategories} onSelect={onFilterExpenses} />
-        <ExpenseList expenses={filteredExpenses} onDelete={onExpenseDelete} />
-      </div>
-    </>
-  );
+    <div>
+      <input ref={domRefObject} type='text' className='form-control'></input>
+    </div>
+  )
 }
 
 export default App;
