@@ -5,6 +5,7 @@ import { ExpenseFilter } from "./expense-tracker/components/ExpenseFilter";
 import { FieldValues } from "react-hook-form"
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
+import { ProductList } from "./ProductList";
 
 // function App() {
 //   const expensesDefault: Expense[] = [
@@ -51,23 +52,17 @@ import "./App.css";
 
 
 function App() {
-  const domRefObject = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    // if dom object exists
-    if (domRefObject.current) {
-      // side effect - focusing on an input field
-      domRefObject.current.focus()
-    }
-  })
-
-  useEffect(() => {
-    document.title = 'Moja apka'
-  })
+  const [category, setCategory] = useState('')
 
   return (
     <div>
-      <input ref={domRefObject} type='text' className='form-control'></input>
+      <select className="form-select" onChange={(event) => setCategory(event.target.value)}>
+        <option value=""></option>
+        <option value="Clothing">Clothing</option>
+        <option value="Household">Household</option>
+      </select>
+      <ProductList category={category}/>
     </div>
   )
 }
