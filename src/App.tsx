@@ -6,6 +6,7 @@ import { FieldValues } from "react-hook-form"
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import { ProductList } from "./ProductList";
+import axios from "axios";
 
 // function App() {
 //   const expensesDefault: Expense[] = [
@@ -69,24 +70,26 @@ import { ProductList } from "./ProductList";
 
 // export default App;
 
+interface User {
+  id: number,
+  name: string,
+  username: string
+}
 
 function App() {
-
-  const connect = () => {
-    console.log("connecting")
-  }
-
-  const disconnect = () => {
-    console.log("disconnecting")
-  }
-
+  const [users, setUsers] = useState<User[]>([])
+  console.log("innerApp")
   useEffect(() => {
-    connect()
-    return () => {disconnect()}
-  })
+    axios.get('https://jsonplaceholder.typicode.com/users')
+      .then((response) => {
+        setUsers(response.data)
+      })
+  }, [])
 
   return (
-    <div></div>
+    <ul>
+      {users.map((userData) => <li key={userData.id}>{userData.name}</li>)}
+    </ul>
   )
 }
 
