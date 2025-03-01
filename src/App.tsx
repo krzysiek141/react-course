@@ -2,11 +2,11 @@ import { Fragment } from "react";
 import { ExpenseTrackerForm } from "./expense-tracker/components/ExpenseTrackerForm";
 import { ExpenseList, Expense } from "./expense-tracker/components/ExpenseList";
 import { ExpenseFilter } from "./expense-tracker/components/ExpenseFilter";
-import { FieldValues } from "react-hook-form"
+import { FieldValues } from "react-hook-form";
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import { ProductList } from "./ProductList";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 // function App() {
 //   const expensesDefault: Expense[] = [
@@ -51,7 +51,6 @@ import axios from "axios";
 //   );
 // }
 
-
 // function App() {
 
 //   const [category, setCategory] = useState('')
@@ -71,31 +70,39 @@ import axios from "axios";
 // export default App;
 
 interface User {
-  id: number,
-  name: string,
-  username: string
+  id: number;
+  name: string;
+  username: string;
 }
 
 function App() {
-  const [users, setUsers] = useState<User[]>([])
-  const [error, setError] = useState("")
-  console.log("innerApp")
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState("");
+  console.log("innerApp");
   useEffect(() => {
-    axios.get('https://jsonplaceholder.typicode.com/users')
-      .then((response) => {
-        setUsers(response.data)
-      })
-      .catch((error) => setError(error.message))
-  }, [])
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+        setUsers(response.data);
+      } catch (error) {
+        setError((error as AxiosError).message);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   return (
     <>
-      {error && <p className='text-danger'>{error}</p>}
+      {error && <p className="text-danger">{error}</p>}
       <ul>
-        {users.map((userData) => <li key={userData.id}>{userData.name}</li>)}
+        {users.map((userData) => (
+          <li key={userData.id}>{userData.name}</li>
+        ))}
       </ul>
     </>
-  )
+  );
 }
 
 export default App;
