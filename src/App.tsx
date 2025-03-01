@@ -6,7 +6,7 @@ import { FieldValues } from "react-hook-form";
 import { useState, useRef, useEffect } from "react";
 import "./App.css";
 import { ProductList } from "./ProductList";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, CanceledError } from "axios";
 
 // function App() {
 //   const expensesDefault: Expense[] = [
@@ -80,17 +80,23 @@ function App() {
   const [error, setError] = useState("");
   console.log("innerApp");
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/users"
-        );
+    const controller = new AbortController();
+
+    axios
+      .get("https://jsonplaceholder.typicode.com/users", {
+        signal: controller.signal,
+      })
+      .then((response) => {
         setUsers(response.data);
-      } catch (error) {
-        setError((error as AxiosError).message);
-      }
-    };
-    fetchUsers();
+      })
+      .catch((error) => {
+        if (error instanceof CanceledError) {
+          return;
+        }
+        setError(error.message);
+      });
+
+    return () => controller.abort();
   }, []);
 
   return (
