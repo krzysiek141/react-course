@@ -115,6 +115,26 @@ function App() {
       });
   };
 
+  const updateUser = (updatedUser: User) => {
+    const cachedUsers = [...users];
+    const newName = updatedUser.name + "!";
+
+    setUsers(
+      users.map((user) => {
+        return user.id === updatedUser.id ? { ...user, name: newName } : user;
+      })
+    );
+    axios
+      .patch(`https://jsonplaceholder.typicode.com/users/${updatedUser.id}`, {
+        ...updatedUser,
+        name: newName,
+      })
+      .catch((error) => {
+        setError(error.message);
+        setUsers(cachedUsers);
+      });
+  };
+
   const addUser = () => {
     const cachedUsers = [...users];
     const newUser: User = {
@@ -149,12 +169,20 @@ function App() {
             key={user.id}
           >
             {user.name}
-            <button
-              className="btn btn-outline-danger"
-              onClick={() => deleteUser(user)}
-            >
-              Delete
-            </button>
+            <div>
+              <button
+                className="btn btn-outline-secondary mx-2"
+                onClick={() => updateUser(user)}
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => deleteUser(user)}
+              >
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>
