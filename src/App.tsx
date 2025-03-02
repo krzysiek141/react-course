@@ -110,7 +110,27 @@ function App() {
     axios
       .delete(`https://jsonplaceholder.typicode.com/users/${deletedUser.id}`)
       .catch((error) => {
-        setError(error);
+        setError(error.message);
+        setUsers(cachedUsers);
+      });
+  };
+
+  const addUser = () => {
+    const cachedUsers = [...users];
+    const newUser: User = {
+      id: 0,
+      name: "Gregory",
+      username: "greg09",
+    };
+    // in my opinion it would be better to update the ui first and in the post response
+    // only check if the user was added
+    axios
+      .post(`https://jsonplaceholder.typicode.com/users`, newUser)
+      .then((response) => {
+        setUsers([...users, response.data]);
+      })
+      .catch((error) => {
+        setError(error.message);
         setUsers(cachedUsers);
       });
   };
@@ -119,6 +139,9 @@ function App() {
     <>
       {isLoading && <div className="spinner-border"></div>}
       {error && <p className="text-danger">{error}</p>}
+      <button className="btn btn-outline-primary mb-3" onClick={addUser}>
+        Add User
+      </button>
       <ul className="list-group">
         {users.map((user) => (
           <li
