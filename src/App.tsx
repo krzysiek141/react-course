@@ -1,18 +1,6 @@
-import { Fragment } from "react";
-import { ExpenseTrackerForm } from "./expense-tracker/components/ExpenseTrackerForm";
-import { ExpenseList, Expense } from "./expense-tracker/components/ExpenseList";
-import { ExpenseFilter } from "./expense-tracker/components/ExpenseFilter";
-import { FieldValues } from "react-hook-form";
 import { useState, useRef, useEffect } from "react";
-import "./App.css";
-import { ProductList } from "./ProductList";
-import apiClient , {CanceledError} from "./services/api-client";
-
-interface User {
-  id: number;
-  name: string;
-  username: string;
-}
+import { CanceledError } from "./services/api-client";
+import userService, { User } from "./services/user-service";
 
 function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -21,13 +9,9 @@ function App() {
 
   console.log("innerApp");
   useEffect(() => {
-    const controller = new AbortController();
-
     setIsLoading(true);
-    apiClient
-      .get("/users", {
-        signal: controller.signal,
-      })
+    const { request, cancel } = userService.getAllUsers();
+    request
       .then((response) => {
         setUsers(response.data);
         setIsLoading(false);
@@ -40,38 +24,32 @@ function App() {
         setIsLoading(false);
       });
 
-    return () => controller.abort();
+    return cancel;
   }, []);
 
   const deleteUser = (deletedUser: User) => {
     const cachedUsers = [...users];
     setUsers(users.filter((user) => user.id !== deletedUser.id));
-    apiClient
-      .delete(`/users/${deletedUser.id}`)
-      .catch((error) => {
-        setError(error.message);
-        setUsers(cachedUsers);
-      });
+    userService.deleteUser(deletedUser.id).catch((error) => {
+      setError(error.message);
+      setUsers(cachedUsers);
+    });
   };
 
   const updateUser = (updatedUser: User) => {
     const cachedUsers = [...users];
     const newName = updatedUser.name + "!";
+    const newUser = { ...updatedUser, name: newName };
 
     setUsers(
       users.map((user) => {
-        return user.id === updatedUser.id ? { ...user, name: newName } : user;
+        return user.id === updatedUser.id ? newUser : user;
       })
     );
-    apiClient
-      .patch(`/users/${updatedUser.id}`, {
-        ...updatedUser,
-        name: newName,
-      })
-      .catch((error) => {
-        setError(error.message);
-        setUsers(cachedUsers);
-      });
+    userService.updateUser(newUser).catch((error) => {
+      setError(error.message);
+      setUsers(cachedUsers);
+    });
   };
 
   const addUser = () => {
@@ -83,8 +61,8 @@ function App() {
     };
     // in my opinion it would be better to update the ui first and in the post response
     // only check if the user was added
-    apiClient
-      .post(`/users`, newUser)
+    userService
+      .createUser(newUser)
       .then((response) => {
         setUsers([...users, response.data]);
       })
