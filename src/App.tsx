@@ -10,7 +10,7 @@ function App() {
   console.log("innerApp");
   useEffect(() => {
     setIsLoading(true);
-    const { request, cancel } = userService.getAllUsers();
+    const { request, cancel } = userService.getAll<User>();
     request
       .then((response) => {
         setUsers(response.data);
@@ -30,7 +30,7 @@ function App() {
   const deleteUser = (deletedUser: User) => {
     const cachedUsers = [...users];
     setUsers(users.filter((user) => user.id !== deletedUser.id));
-    userService.deleteUser(deletedUser.id).catch((error) => {
+    userService.delete(deletedUser.id).catch((error) => {
       setError(error.message);
       setUsers(cachedUsers);
     });
@@ -46,7 +46,7 @@ function App() {
         return user.id === updatedUser.id ? newUser : user;
       })
     );
-    userService.updateUser(newUser).catch((error) => {
+    userService.update(newUser).catch((error) => {
       setError(error.message);
       setUsers(cachedUsers);
     });
@@ -62,7 +62,7 @@ function App() {
     // in my opinion it would be better to update the ui first and in the post response
     // only check if the user was added
     userService
-      .createUser(newUser)
+      .create(newUser)
       .then((response) => {
         setUsers([...users, response.data]);
       })
