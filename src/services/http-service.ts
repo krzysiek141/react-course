@@ -4,7 +4,7 @@ export interface Entity {
   id: number;
 }
 
-class HttpService {
+export default class HttpService {
   endpoint: string;
 
   constructor(endpoint: string) {
@@ -32,5 +32,5 @@ class HttpService {
   }
 }
 
-const create = (endpoint: string) => new HttpService(endpoint);
-export default create;
+// const create = (endpoint: string) => new HttpService(endpoint);
+// export default create;
