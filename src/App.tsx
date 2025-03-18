@@ -1,31 +1,8 @@
-import { useState, useRef, useEffect } from "react";
-import { CanceledError } from "./services/api-client";
 import userService, { User } from "./services/user-service";
+import useUsers from "./hooks/useUsers";
 
 function App() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  console.log("innerApp");
-  useEffect(() => {
-    setIsLoading(true);
-    const { request, cancel } = userService.getAll<User>();
-    request
-      .then((response) => {
-        setUsers(response.data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        if (error instanceof CanceledError) {
-          return;
-        }
-        setError(error.message);
-        setIsLoading(false);
-      });
-
-    return cancel;
-  }, []);
+  const { users, error, isLoading, setUsers, setError } = useUsers();
 
   const deleteUser = (deletedUser: User) => {
     const cachedUsers = [...users];
